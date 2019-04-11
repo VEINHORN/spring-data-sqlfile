@@ -31,6 +31,9 @@ public class LibTest {
 
     @Test
     public void test2() {
-        // TypeSpec.classBuilder(ClassName.get(String.class)).superclass(TypeName.get())
+        String fullName = "com.veinhorn.spring.sqlfile.example.Test";
+        String packageName = fullName.substring(0, fullName.lastIndexOf("."));
+
+        String test = "test";
     }
 }

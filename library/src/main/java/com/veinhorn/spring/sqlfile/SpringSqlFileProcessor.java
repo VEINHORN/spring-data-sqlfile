@@ -1,10 +1,9 @@
 package com.veinhorn.spring.sqlfile;
 
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.apache.commons.io.IOUtils;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.processing.*;
@@ -31,6 +30,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        // Here we get all Repository classes
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Repository.class);
 
         for (Element annotatedElement : elements) {
@@ -39,7 +39,44 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
             System.out.println("element = " + annotatedElement.getKind().toString());
             System.out.println("element name = " + annotatedElement.getSimpleName().toString());
 
+            // Here we check that our Repositories is interfaces
             if (annotatedElement.getKind().isInterface()) {
+                // Here we create type using JavaPoet library
+                System.out.println("full repository name = " + annotatedElement.toString());
+
+                String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
+                TypeSpec enrichedRepo = TypeSpec
+                        .interfaceBuilder(repositoryName)
+                        .addMethod(
+                                MethodSpec
+                                        .methodBuilder("test")
+                                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .returns(void.class)
+                                        .addParameter(String[].class, "args") // here we need add parameters
+                                        .addAnnotation(
+                                                AnnotationSpec
+                                                        .builder(Query.class)
+                                                        .addMember("value", "\"some sql here\"") // here we should put SQL from file
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .build();
+
+                System.out.println("new full repo name = " + repositoryName);
+                String packageName = annotatedElement.toString().substring(0, annotatedElement.toString().lastIndexOf("."));
+                JavaFile javaFile = JavaFile.builder(packageName, enrichedRepo).build();
+
+                try {
+                    Filer filer = processingEnv.getFiler();
+                    JavaFileObject javaFileObject = filer.createSourceFile(repositoryName, null);
+                    Writer writer = javaFileObject.openWriter();
+                    writer.write(javaFile.toString());
+                    writer.close();
+                } catch (IOException e) {
+                    System.out.println("Cannot read SQL query file.");
+                }
+
                 List<? extends Element> methods = annotatedElement.getEnclosedElements();
                 // here we should for each method check annotation
                 methods.forEach(p -> {
@@ -55,30 +92,26 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
             }
         }
 
-        try {
-            Filer filer = processingEnv.getFiler();
+            /*Filer filer = processingEnv.getFiler();
             FileObject file = filer.getResource(StandardLocation.CLASS_OUTPUT, "", "query.sql"); // sql file we need to pass here
 
-            String result = IOUtils.toString(file.openInputStream(), "UTF-8");
+            String result = IOUtils.toString(file.openInputStream(), "UTF-8");*/
             //System.out.println(result);
 
 
 
-            JavaFile javaFile = create();
-            //System.out.println(javaFile.toString());
+            /*JavaFile javaFile = create();
 
             JavaFileObject javaFileObject = filer.createSourceFile("HelloWorld", null);
             Writer writer = javaFileObject.openWriter();
             writer.write(javaFile.toString());
-            writer.close();
+            writer.close();*/
 
 
             // filer.createSourceFile("test", (Element[]) create().toArray());
-        } catch (IOException e) {
-            System.out.println("Cannot read SQL query file.");
-        }
 
-        return false;
+
+        return true;
     }
 
     private JavaFile create() {
