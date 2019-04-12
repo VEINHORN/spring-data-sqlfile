@@ -1,6 +1,6 @@
 # spring-data-sqlfile
 
-When your Spring Data queries become huge, `spring-data-sqlfile` helps you load it from resources folder.
+When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load them from resources folder. It makes your code clean and you can work with well-formed *SQL* queries in your IDE.
 
 ## Usage
 
@@ -22,3 +22,7 @@ interface UserRepositoryGenerated {
   void findById();
 }
 ```
+
+# How it works
+
+`spring-data-sqlfile` is an annotation processor which generates code during compile time.
