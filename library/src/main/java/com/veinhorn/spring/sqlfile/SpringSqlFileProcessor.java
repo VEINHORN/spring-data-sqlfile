@@ -3,6 +3,7 @@ package com.veinhorn.spring.sqlfile;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
 import org.apache.commons.io.IOUtils;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +42,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
             System.out.println("element name = " + annotatedElement.getSimpleName().toString());
 
             // Here we check that our Repositories is interfaces
-            if (annotatedElement.getKind().isInterface()) {
+            if (annotatedElement.getKind().isInterface() && !annotatedElement.getSimpleName().toString().endsWith("Generated")) {
                 // Here we create type using JavaPoet library
                 System.out.println("full repository name = " + annotatedElement.toString());
 
@@ -52,22 +53,39 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                         .stream()
                         .map(method -> {
                             Annotation annotation = ((Element) method).getAnnotation(SqlFromResource.class);
+
                             System.out.println("method = " + method.getSimpleName().toString());
                             String queryPath = ((SqlFromResource) annotation).path();
                             System.out.println("sql file path = " + queryPath);
 
+                            String methodReturnType = ((Element) method).asType().toString().replaceAll("\\(.*\\)", ""); // replace parameter types
+                            System.out.println("method return type = " + methodReturnType);
+
                             try {
+                                TypeName complexType = ParameterizedTypeName.get(
+                                        ClassName.get("java.util", "List"),
+                                        ClassName.get("com.veinhorn.spring.sqlfile.example.domain", "User")
+                                                /*Util.ClassUtil.getPackageName(methodReturnType),
+                                                Util.ClassUtil.getSimpleClassName(methodReturnType))*/
+                                );
+
                                 return MethodSpec
                                         .methodBuilder(((Element) method).getSimpleName().toString())
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                        .returns(complexType/*ClassName.get(
+                                                Util.ClassUtil.getPackageName(methodReturnType),
+                                                Util.ClassUtil.getSimpleClassName(methodReturnType))*/
+                                        )
                                         .addAnnotation(
                                                 AnnotationSpec
                                                         .builder(Query.class)
-                                                        .addMember("value", String.format("\"%s\"", getQuery(queryPath))/*"\"some complex sql\""*/)
+                                                        .addMember("value", String.format("\"%s\"", getQuery(queryPath)))
+                                                        .addMember("nativeQuery", "true")
                                                         .build()
                                         )
                                         .build();
                             } catch (IOException e) {
+                                System.out.println(e.getStackTrace().toString());
                                 return null;
                             }
                         })
@@ -75,6 +93,13 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
                 TypeSpec enrichedRepo = TypeSpec
                         .interfaceBuilder(repositoryName)
+                        .addAnnotation(Repository.class)
+                        .addSuperinterface(ParameterizedTypeName.get(
+                                ClassName.get(JpaRepository.class),
+                                ClassName.get("com.veinhorn.spring.sqlfile.example.domain", "User"),
+                                ClassName.get(Integer.class)
+                        ))
+                        .addModifiers(Modifier.PUBLIC)
                         .addMethods(methods)
                         .build();
 
@@ -92,29 +117,11 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                     System.out.println("Cannot read SQL query file.");
                 }
 
-
-
                 System.out.println("name = " + annotatedElement.getSimpleName().toString());
                 // System.out.println("class.yo, size = " + elements.size());
                 System.out.println("source code = " + annotatedElement.toString());
             }
         }
-
-
-            //System.out.println(result);
-
-
-
-            /*JavaFile javaFile = create();
-
-            JavaFileObject javaFileObject = filer.createSourceFile("HelloWorld", null);
-            Writer writer = javaFileObject.openWriter();
-            writer.write(javaFile.toString());
-            writer.close();*/
-
-
-            // filer.createSourceFile("test", (Element[]) create().toArray());
-
 
         return true;
     }

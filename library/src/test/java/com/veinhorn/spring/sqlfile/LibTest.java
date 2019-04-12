@@ -1,13 +1,10 @@
 package com.veinhorn.spring.sqlfile;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import org.junit.Test;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.TypeMirror;
 
 public class LibTest {
     @Test
@@ -31,8 +28,14 @@ public class LibTest {
 
     @Test
     public void test2() {
-        String fullName = "com.veinhorn.spring.sqlfile.example.Test";
-        String packageName = fullName.substring(0, fullName.lastIndexOf("."));
+        AnnotationSpec spec = AnnotationSpec
+                .builder(Query.class)
+                .addMember("value", "\"sdfsdf\"")
+                .addMember("nativeQuery", "true")
+                .build();
+
+        String fullName = "com.veinhorn.spring.sqlfile.example.domain.User";
+
 
         String test = "test";
     }
