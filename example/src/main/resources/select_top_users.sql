@@ -1,3 +1,3 @@
 SELECT *
     FROM users
-    WHERE id > 3;
+    WHERE id = 2;

@@ -2,11 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
+    <!--<parent>
         <artifactId>spring-data-sqlfile</artifactId>
         <groupId>com.veinhorn.spring.sqlfile</groupId>
         <version>0.0.1</version>
+    </parent>-->
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.5.RELEASE</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>example</artifactId>
@@ -17,15 +24,25 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.veinhorn.spring.sqlfile</groupId>
-            <artifactId>library</artifactId>
-            <version>0.0.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-            <version>2.1.6.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.veinhorn.spring.sqlfile</groupId>
+            <artifactId>library</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 
@@ -42,6 +59,11 @@
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
