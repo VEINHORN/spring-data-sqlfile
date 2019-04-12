@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AutoService(Processor.class)
 public class SpringSqlFileProcessor extends AbstractProcessor {
@@ -45,28 +46,42 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                 System.out.println("full repository name = " + annotatedElement.toString());
 
                 String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
-                TypeSpec enrichedRepo = TypeSpec
-                        .interfaceBuilder(repositoryName)
-                        .addMethod(
-                                MethodSpec
-                                        .methodBuilder("test")
+
+                List<MethodSpec> methods = annotatedElement
+                        .getEnclosedElements()
+                        .stream()
+                        .map(method -> {
+                            Annotation annotation = ((Element) method).getAnnotation(SqlFromResource.class);
+                            System.out.println("method = " + method.getSimpleName().toString());
+                            String queryPath = ((SqlFromResource) annotation).path();
+                            System.out.println("sql file path = " + queryPath);
+
+                            try {
+                                return MethodSpec
+                                        .methodBuilder(((Element) method).getSimpleName().toString())
                                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                        .returns(void.class)
-                                        .addParameter(String[].class, "args") // here we need add parameters
                                         .addAnnotation(
                                                 AnnotationSpec
                                                         .builder(Query.class)
-                                                        .addMember("value", "\"some sql here\"") // here we should put SQL from file
+                                                        .addMember("value", String.format("\"%s\"", getQuery(queryPath))/*"\"some complex sql\""*/)
                                                         .build()
                                         )
-                                        .build()
-                        )
+                                        .build();
+                            } catch (IOException e) {
+                                return null;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                TypeSpec enrichedRepo = TypeSpec
+                        .interfaceBuilder(repositoryName)
+                        .addMethods(methods)
                         .build();
 
                 System.out.println("new full repo name = " + repositoryName);
                 String packageName = annotatedElement.toString().substring(0, annotatedElement.toString().lastIndexOf("."));
                 JavaFile javaFile = JavaFile.builder(packageName, enrichedRepo).build();
-
+                // Trying to write into file
                 try {
                     Filer filer = processingEnv.getFiler();
                     JavaFileObject javaFileObject = filer.createSourceFile(repositoryName, null);
@@ -77,25 +92,15 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                     System.out.println("Cannot read SQL query file.");
                 }
 
-                List<? extends Element> methods = annotatedElement.getEnclosedElements();
-                // here we should for each method check annotation
-                methods.forEach(p -> {
-                    System.out.println("method = " + p.getSimpleName().toString());
 
-                    Annotation annotation = p.getAnnotation(SqlFile.class);
-                    System.out.println(((SqlFile) annotation).path());
-                });
 
                 System.out.println("name = " + annotatedElement.getSimpleName().toString());
-                System.out.println("class.yo, size = " + elements.size());
+                // System.out.println("class.yo, size = " + elements.size());
                 System.out.println("source code = " + annotatedElement.toString());
             }
         }
 
-            /*Filer filer = processingEnv.getFiler();
-            FileObject file = filer.getResource(StandardLocation.CLASS_OUTPUT, "", "query.sql"); // sql file we need to pass here
 
-            String result = IOUtils.toString(file.openInputStream(), "UTF-8");*/
             //System.out.println(result);
 
 
@@ -114,29 +119,18 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
         return true;
     }
 
-    private JavaFile create() {
-        MethodSpec main = MethodSpec.methodBuilder("main")
-                .addModifiers(Modifier.PUBLIC/*, Modifier.STATIC*/)
-                .returns(void.class)
-                .addParameter(String[].class, "args")
-                .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
-                .build();
-
-        TypeSpec helloWorld = TypeSpec.classBuilder("HelloWorld")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addMethod(main)
-                .build();
-
-        // this package we need to pass here from arguments
-        JavaFile file = JavaFile.builder("com.veinhorn.spring.sqlfile.example", helloWorld).build();
-
-        return file;
+    private String getQuery(String queryPath) throws IOException {
+        Filer filer = processingEnv.getFiler();
+        FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, "", queryPath);
+        return IOUtils
+                .toString(queryFile.openInputStream(), "UTF-8")
+                .replaceAll(System.lineSeparator(), " "); // use this to create one line query string
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(SqlFile.class.getCanonicalName());
+        annotations.add(SqlFromResource.class.getCanonicalName());
         return annotations;
     }
 

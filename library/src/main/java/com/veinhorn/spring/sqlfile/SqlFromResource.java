@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface SqlFile {
+public @interface SqlFromResource {
     /**
      * Path to the SQL file
      * @return

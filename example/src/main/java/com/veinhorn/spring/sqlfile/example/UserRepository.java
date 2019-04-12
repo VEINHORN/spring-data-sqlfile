@@ -1,10 +1,10 @@
 package com.veinhorn.spring.sqlfile.example;
 
-import com.veinhorn.spring.sqlfile.SqlFile;
+import com.veinhorn.spring.sqlfile.SqlFromResource;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository {
-    @SqlFile(path = "query.sql")
+    @SqlFromResource(path = "query.sql")
     String findById(int userId);
 }
