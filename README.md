@@ -23,7 +23,7 @@ When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load the
 <dependency>
     <groupId>com.github.VEINHORN.spring-data-sqlfile</groupId>
     <artifactId>sqlfile-processor</artifactId>
-    <version>521abae4f2</version>
+    <version>16e42f6ffd</version>
 </dependency>
 ```
 
