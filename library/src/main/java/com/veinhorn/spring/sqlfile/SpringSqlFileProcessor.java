@@ -51,8 +51,10 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                 String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
 
                 List<? extends TypeMirror> interfaces = ((TypeElement) annotatedElement).getInterfaces();
+                String entityType = ((DeclaredType) interfaces.get(0)).getTypeArguments().get(0).toString();
+                String keyType = ((DeclaredType) interfaces.get(0)).getTypeArguments().get(1).toString();
 
-                System.out.println("size = " + ((DeclaredType) interfaces.get(0)).getTypeArguments().get(0).toString());
+                // System.out.println("size = " + ;
 
                 List<MethodSpec> methods = annotatedElement
                         .getEnclosedElements()
@@ -89,8 +91,10 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                         .addAnnotation(Repository.class)
                         .addSuperinterface(ParameterizedTypeName.get(
                                 ClassName.get(JpaRepository.class),
-                                ClassName.get("com.veinhorn.spring.sqlfile.example.domain", "User"),
-                                ClassName.get(Integer.class)
+                                ClassName.bestGuess(entityType),
+                                ClassName.bestGuess(keyType)
+                                /*ClassName.get("com.veinhorn.spring.sqlfile.example.domain", "User"),
+                                ClassName.get(Integer.class)*/
                         ))
                         .addModifiers(Modifier.PUBLIC)
                         .addMethods(methods)
