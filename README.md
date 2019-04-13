@@ -2,6 +2,29 @@
 
 When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load them from resources folder. It makes your code clean and you can work with well-formed *SQL* queries in your IDE.
 
+## Install
+
+### Add JitPack repository
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+### Add dependency
+
+```xml
+<dependency>
+    <groupId>com.github.VEINHORN.spring-data-sqlfile</groupId>
+    <artifactId>sqlfile-processor</artifactId>
+    <version>99228ac18b</version>
+</dependency>
+```
+
 ## Usage
 
 Just mark methods with `SqlFromResource` annotation and provide valid path to the SQL query.
