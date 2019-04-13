@@ -1,5 +1,7 @@
 # spring-data-sqlfile
 
+[![Build Status](https://travis-ci.org/VEINHORN/spring-data-sqlfile.svg?branch=master)](https://travis-ci.org/VEINHORN/spring-data-sqlfile) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
+
 When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load them from resources folder. It makes your code clean and you can work with well-formed *SQL* queries in your IDE.
 
 ## Install
@@ -21,7 +23,7 @@ When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load the
 <dependency>
     <groupId>com.github.VEINHORN.spring-data-sqlfile</groupId>
     <artifactId>sqlfile-processor</artifactId>
-    <version>99228ac18b</version>
+    <version>521abae4f2</version>
 </dependency>
 ```
 
@@ -37,6 +39,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @SqlFromResource(path = "select_user_by_id.sql")
     User findById(int userId);
+
+    @SqlFromResource(path = "select_user_by_name.sql")
+    User findByUsername(String username);
 }
 ```
 
@@ -56,7 +61,13 @@ public interface UserRepositoryGenerated extends JpaRepository<User, Integer> {
       value = "SELECT *     FROM users     WHERE id = :userId",
       nativeQuery = true
   )
-  User findById();
+  User findById(int userId);
+
+  @Query(
+      value = "SELECT *     FROM users     WHERE username = :username",
+      nativeQuery = true
+  )
+  User findByUsername(String username);
 }
 ```
 
