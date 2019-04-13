@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -18,6 +19,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +50,10 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
                 String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
 
+                List<? extends TypeMirror> interfaces = ((TypeElement) annotatedElement).getInterfaces();
+
+                System.out.println("size = " + ((DeclaredType) interfaces.get(0)).getTypeArguments().get(0).toString());
+
                 List<MethodSpec> methods = annotatedElement
                         .getEnclosedElements()
                         .stream()
@@ -58,13 +64,13 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                             System.out.println("method = " + method.getSimpleName().toString());
                             System.out.println("sql file path = " + queryPath);
 
-                            ExecutableElement g = ((ExecutableElement) ((Element) method));
-                            List<? extends VariableElement> m = g.getParameters();
+                            ExecutableElement executableElement = ((ExecutableElement) ((Element) method));
+                            List<? extends VariableElement> m = executableElement.getParameters();
                             if (!m.isEmpty()) {
                                 System.out.println(m.get(0).getSimpleName().toString());
                             }
 
-                            //List<String>
+                            // List<String> parameterNames = m.isEmpty() ? Collections.emptyList() :
                             try {
                                 return new MethodGenerator(
                                         ((Element) method).getSimpleName().toString(),

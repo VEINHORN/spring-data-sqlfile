@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>com.veinhorn.spring.sqlfile</groupId>
-            <artifactId>library</artifactId>
+            <artifactId>sqlfile-processor</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>
