@@ -31,18 +31,32 @@ Just mark methods with `SqlFromResource` annotation and provide valid path to th
 
 ```java
 @Repository
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Integer> {
     @SqlFromResource(path = "select_top_users.sql")
-    String findById(int userId);
+    List<User> findAll();
+
+    @SqlFromResource(path = "select_user_by_id.sql")
+    User findById(int userId);
 }
 ```
 
-Then you will get below code, which you can use in your services:
+Recompile project and you'll give generated repository with SQL queries injected from resources folder. See [example](example) for more details.
+
 
 ```java
-interface UserRepositoryGenerated {
-  @Query("SELECT *     FROM users     WHERE id > 3;")
-  void findById();
+@Repository
+public interface UserRepositoryGenerated extends JpaRepository<User, Integer> {
+  @Query(
+      value = "SELECT *     FROM users     WHERE id = 2;",
+      nativeQuery = true
+  )
+  List<User> findAll();
+
+  @Query(
+      value = "SELECT *     FROM users     WHERE id = :userId",
+      nativeQuery = true
+  )
+  User findById();
 }
 ```
 
