@@ -3,6 +3,8 @@ package com.veinhorn.spring.sqlfile;
 import com.squareup.javapoet.MethodSpec;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class MethodGeneratorTest {
@@ -12,7 +14,7 @@ public class MethodGeneratorTest {
         String sqlQuery = "select * from users";
         String methodType = "()java.util.List<com.veinhorn.spring.sqlfile.example.domain.User>";
 
-        MethodSpec methodSpec = new MethodGenerator(methodName, sqlQuery, methodType).generate();
+        MethodSpec methodSpec = new MethodGenerator(methodName, sqlQuery, methodType, new ArrayList<>(), new ArrayList<>()).generate();
         System.out.println(methodSpec.toString());
 
         assertTrue(true);
