@@ -11,4 +11,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Integer> {
     @SqlFromResource(path = "select_top_users.sql")
     List<User> findAll();
+
+    @SqlFromResource(path = "select_user_by_id.sql")
+    User findById(int userId);
 }
