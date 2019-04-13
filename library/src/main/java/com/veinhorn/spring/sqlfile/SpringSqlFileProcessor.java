@@ -12,17 +12,13 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AutoService(Processor.class)
@@ -38,9 +34,6 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Repository.class);
 
         for (Element annotatedElement : elements) {
-            System.out.println("kind of element = " + annotatedElement.getKind().toString());
-
-            System.out.println("element = " + annotatedElement.getKind().toString());
             System.out.println("element name = " + annotatedElement.getSimpleName().toString());
 
             // Here we check that our Repositories is interfaces
@@ -50,11 +43,10 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
                 String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
 
+                // Getting JpaRepository types for entity and key
                 List<? extends TypeMirror> interfaces = ((TypeElement) annotatedElement).getInterfaces();
                 String entityType = ((DeclaredType) interfaces.get(0)).getTypeArguments().get(0).toString();
                 String keyType = ((DeclaredType) interfaces.get(0)).getTypeArguments().get(1).toString();
-
-                // System.out.println("size = " + ;
 
                 List<MethodSpec> methods = annotatedElement
                         .getEnclosedElements()
@@ -68,16 +60,22 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
                             ExecutableElement executableElement = ((ExecutableElement) ((Element) method));
                             List<? extends VariableElement> m = executableElement.getParameters();
-                            if (!m.isEmpty()) {
-                                System.out.println(m.get(0).getSimpleName().toString());
-                            }
+                            List<String> paramNames = m.isEmpty() ? new ArrayList<>() : m.stream().map(p -> ((VariableElement) p).getSimpleName().toString()).collect(Collectors.toList());
+                            paramNames.forEach(System.out::println);
 
-                            // List<String> parameterNames = m.isEmpty() ? Collections.emptyList() :
+
+                            ExecutableType executableType = (ExecutableType) ((ExecutableElement) method).asType();
+                            List<? extends TypeMirror> types = executableType.getParameterTypes();
+                            List<String> paramTypes = types.isEmpty() ? new ArrayList<>() : types.stream().map(p -> ((TypeMirror) p).toString()).collect(Collectors.toList());
+                            paramTypes.forEach(System.out::println);
+
                             try {
                                 return new MethodGenerator(
                                         ((Element) method).getSimpleName().toString(),
                                         getQuery(queryPath),
-                                        ((Element) method).asType().toString()
+                                        ((Element) method).asType().toString(),
+                                        paramTypes,
+                                        paramNames
                                 ).generate();
                             } catch (IOException e) {
                                 System.out.println(e.getStackTrace().toString());
@@ -93,8 +91,6 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                                 ClassName.get(JpaRepository.class),
                                 ClassName.bestGuess(entityType),
                                 ClassName.bestGuess(keyType)
-                                /*ClassName.get("com.veinhorn.spring.sqlfile.example.domain", "User"),
-                                ClassName.get(Integer.class)*/
                         ))
                         .addModifiers(Modifier.PUBLIC)
                         .addMethods(methods)
@@ -103,7 +99,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                 System.out.println("new full repo name = " + repositoryName);
                 String packageName = annotatedElement.toString().substring(0, annotatedElement.toString().lastIndexOf("."));
                 JavaFile javaFile = JavaFile.builder(packageName, enrichedRepo).build();
-                // Trying to write into file
+
                 try {
                     Filer filer = processingEnv.getFiler();
                     JavaFileObject javaFileObject = filer.createSourceFile(repositoryName, null);
@@ -115,7 +111,6 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                 }
 
                 System.out.println("name = " + annotatedElement.getSimpleName().toString());
-                // System.out.println("class.yo, size = " + elements.size());
                 System.out.println("source code = " + annotatedElement.toString());
             }
         }
