@@ -14,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @SqlFromResource(path = "select_user_by_id.sql")
     User findById(int userId);
+
+    @SqlFromResource(path = "select_user_by_name.sql")
+    User findByUsername(String username);
 }
