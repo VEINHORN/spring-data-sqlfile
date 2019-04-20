@@ -3,8 +3,8 @@ package com.veinhorn.spring.sqlfile;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
 import com.veinhorn.spring.sqlfile.generator.MethodGenerator;
+import com.veinhorn.spring.sqlfile.generator.TypeGenerator;
 import org.apache.commons.io.IOUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.processing.*;
@@ -95,17 +95,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                         })
                         .collect(Collectors.toList());
 
-                TypeSpec enrichedRepo = TypeSpec
-                        .interfaceBuilder(repositoryName)
-                        .addAnnotation(Repository.class)
-                        .addSuperinterface(ParameterizedTypeName.get(
-                                ClassName.get(JpaRepository.class),
-                                ClassName.bestGuess(entityType),
-                                ClassName.bestGuess(keyType)
-                        ))
-                        .addModifiers(Modifier.PUBLIC)
-                        .addMethods(methods)
-                        .build();
+                TypeSpec enrichedRepo = new TypeGenerator(repositoryName, entityType, keyType, methods).generate();
 
                 System.out.println("new full repo name = " + repositoryName);
                 String packageName = annotatedElement.toString().substring(0, annotatedElement.toString().lastIndexOf("."));
