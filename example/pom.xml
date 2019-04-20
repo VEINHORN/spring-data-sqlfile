@@ -56,6 +56,9 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <compilerArgument>-Xlint:all</compilerArgument>
+                    <compilerArgs>
+                        <arg>-AclassPostfix=Impl</arg>
+                    </compilerArgs>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                 </configuration>

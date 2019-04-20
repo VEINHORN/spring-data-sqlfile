@@ -45,12 +45,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 }
 ```
 
-Recompile project and you'll give generated repository with SQL queries injected from resources folder. See [example](example) for more details.
+Recompile project with `mvn clean compile` and you'll get generated repository classes with SQL queries which are injected from resources folder. See [example](example) for more details.
 
 
 ```java
 @Repository
-public interface UserRepositoryGenerated extends JpaRepository<User, Integer> {
+public interface UserRepositoryImpl extends JpaRepository<User, Integer> {
   @Query(
       value = "SELECT *     FROM users     WHERE id = 2;",
       nativeQuery = true
@@ -71,6 +71,13 @@ public interface UserRepositoryGenerated extends JpaRepository<User, Integer> {
 }
 ```
 
-# How it works
+## Configuration
 
-`spring-data-sqlfile` is an annotation processor which generates code during compile time.
+You can specify class postfix in `maven-compile-plugin` configuration (which is `Impl` by default):
+
+```xml
+<compilerArgs>
+	<arg>-AclassPostfix=Impl</arg>
+</compilerArgs>
+```
+

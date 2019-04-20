@@ -37,11 +37,11 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
             System.out.println("element name = " + annotatedElement.getSimpleName().toString());
 
             // Here we check that our Repositories is interfaces
-            if (annotatedElement.getKind().isInterface() && !annotatedElement.getSimpleName().toString().endsWith("Generated")) {
+            if (annotatedElement.getKind().isInterface() && !annotatedElement.getSimpleName().toString().endsWith(getClassPostfix())) {
                 // Here we create type using JavaPoet library
                 System.out.println("full repository name = " + annotatedElement.toString());
 
-                String repositoryName = annotatedElement.getSimpleName().toString() + "Generated";
+                String repositoryName = annotatedElement.getSimpleName().toString() + getClassPostfix();
 
                 // Getting JpaRepository types for entity and key
                 List<? extends TypeMirror> interfaces = ((TypeElement) annotatedElement).getInterfaces();
@@ -118,14 +118,6 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
         return true;
     }
 
-    private String getQuery(String queryPath) throws IOException {
-        Filer filer = processingEnv.getFiler();
-        FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, "", queryPath);
-        return IOUtils
-                .toString(queryFile.openInputStream(), "UTF-8")
-                .replaceAll(System.lineSeparator(), " "); // use this to create one line query string
-    }
-
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<>();
@@ -136,5 +128,17 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.RELEASE_8;
+    }
+
+    private String getClassPostfix() {
+        return processingEnv.getOptions().getOrDefault("classPostfix", "Impl");
+    }
+
+    private String getQuery(String queryPath) throws IOException {
+        Filer filer = processingEnv.getFiler();
+        FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, "", queryPath);
+        return IOUtils
+                .toString(queryFile.openInputStream(), "UTF-8")
+                .replaceAll(System.lineSeparator(), " "); // use this to create one line query string
     }
 }
