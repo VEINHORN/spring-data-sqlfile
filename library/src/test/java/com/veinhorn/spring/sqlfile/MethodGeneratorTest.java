@@ -1,6 +1,7 @@
 package com.veinhorn.spring.sqlfile;
 
 import com.squareup.javapoet.MethodSpec;
+import com.veinhorn.spring.sqlfile.generator.MethodGenerator;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.veinhorn.spring.sqlfile;
+package com.veinhorn.spring.sqlfile.generator;
 
 public interface Generator<T> {
     T generate();

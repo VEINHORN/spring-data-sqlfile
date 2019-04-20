@@ -2,6 +2,7 @@ package com.veinhorn.spring.sqlfile;
 
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
+import com.veinhorn.spring.sqlfile.generator.MethodGenerator;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -52,6 +53,15 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                         .getEnclosedElements()
                         .stream()
                         .map(method -> {
+                            List<? extends AnnotationMirror> methodAnnotations = ((Element) method).getAnnotationMirrors();
+                            methodAnnotations.forEach(a -> {
+                                System.out.println(a.getAnnotationType().toString());
+                                a.getElementValues().keySet().forEach(r -> {
+                                    System.out.println(r.toString());
+                                    System.out.println(a.getElementValues().get(r));
+                                });
+                            });
+
                             Annotation annotation = ((Element) method).getAnnotation(SqlFromResource.class);
                             String queryPath = ((SqlFromResource) annotation).path();
 
@@ -75,7 +85,8 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                                         getQuery(queryPath),
                                         ((Element) method).asType().toString(),
                                         paramTypes,
-                                        paramNames
+                                        paramNames,
+                                        methodAnnotations
                                 ).generate();
                             } catch (IOException e) {
                                 System.out.println(e.getStackTrace().toString());

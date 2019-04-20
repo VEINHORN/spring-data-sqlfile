@@ -1,9 +1,13 @@
-package com.veinhorn.spring.sqlfile;
+package com.veinhorn.spring.sqlfile.generator;
 
 import com.squareup.javapoet.*;
+import com.veinhorn.spring.sqlfile.SqlFromResource;
+import com.veinhorn.spring.sqlfile.TypeRecognizer;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,12 +23,18 @@ public class MethodGenerator implements Generator<MethodSpec> {
     private List<String> paramTypes;
     private List<String> paramNames;
 
-    public MethodGenerator(String methodName, String sqlQuery, String methodType, List<String> paramTypes, List<String> paramNames) {
+    // method annotations from incoming Repository method
+    private List<? extends AnnotationMirror> methodAnnotations;
+
+    public MethodGenerator(String methodName, String sqlQuery, String methodType,
+                           List<String> paramTypes, List<String> paramNames,
+                           List<? extends AnnotationMirror> methodAnnotations) {
         this.methodName = methodName;
         this.sqlQuery = sqlQuery;
         this.methodType = methodType;
         this.paramTypes = paramTypes;
         this.paramNames = paramNames;
+        this.methodAnnotations = methodAnnotations;
     }
 
     @Override
@@ -36,8 +46,30 @@ public class MethodGenerator implements Generator<MethodSpec> {
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .returns(getReturnType())
                 .addParameters(createParameters())
-                .addAnnotation(getAnnotation())
+                .addAnnotations(createAnnotations())
                 .build();
+    }
+
+    private List<AnnotationSpec> createAnnotations() {
+        List<AnnotationSpec> annotations = new ArrayList<>();
+        annotations.add(createQueryAnnotation());
+        annotations.addAll(
+                methodAnnotations
+                        .stream()
+                        .filter(annotation -> !annotationType(annotation).equals(SqlFromResource.class.getTypeName()))
+                        .map(annotation -> {
+                            AnnotationSpec.Builder annotationSpec = AnnotationSpec
+                                    .builder(ClassName.bestGuess(((AnnotationMirror) annotation).getAnnotationType().toString()));
+
+                            ((AnnotationMirror) annotation).getElementValues().keySet().forEach(key -> {
+                                annotationSpec.addMember(key.toString().replaceAll("\\(\\)", ""), ((AnnotationMirror) annotation).getElementValues().get(key).toString());
+                            });
+
+                            return annotationSpec.build();
+                        })
+                .collect(Collectors.toList())
+        );
+        return annotations;
     }
 
     private List<ParameterSpec> createParameters() {
@@ -58,7 +90,7 @@ public class MethodGenerator implements Generator<MethodSpec> {
         return new TypeRecognizer().recognize(methodType);
     }
 
-    private AnnotationSpec getAnnotation() {
+    private AnnotationSpec createQueryAnnotation() {
         return AnnotationSpec
                 .builder(Query.class)
                 .addMember("value", getQuery())
@@ -68,5 +100,9 @@ public class MethodGenerator implements Generator<MethodSpec> {
 
     private String getQuery() {
         return String.format("\"%s\"", sqlQuery);
+    }
+
+    private String annotationType(AnnotationMirror annotation) {
+        return annotation.getAnnotationType().toString();
     }
 }
