@@ -15,7 +15,7 @@ public class MethodGeneratorTest {
         String sqlQuery = "select * from users";
         String methodType = "()java.util.List<com.veinhorn.spring.sqlfile.example.domain.User>";
 
-        MethodSpec methodSpec = new MethodGenerator(methodName, sqlQuery, methodType, new ArrayList<>(), new ArrayList<>()).generate();
+        MethodSpec methodSpec = new MethodGenerator(methodName, sqlQuery, methodType, new ArrayList<>(), new ArrayList<>(), new ArrayList<>()).generate();
         System.out.println(methodSpec.toString());
 
         assertTrue(true);
