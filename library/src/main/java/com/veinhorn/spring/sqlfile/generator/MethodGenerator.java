@@ -1,6 +1,7 @@
 package com.veinhorn.spring.sqlfile.generator;
 
 import com.squareup.javapoet.*;
+import com.veinhorn.spring.sqlfile.QueryBlockCreator;
 import com.veinhorn.spring.sqlfile.SqlFromResource;
 import com.veinhorn.spring.sqlfile.TypeRecognizer;
 import org.springframework.data.jpa.repository.Query;
@@ -93,13 +94,9 @@ public class MethodGenerator implements Generator<MethodSpec> {
     private AnnotationSpec createQueryAnnotation() {
         return AnnotationSpec
                 .builder(Query.class)
-                .addMember("value", getQuery())
+                .addMember("value", new QueryBlockCreator(sqlQuery).create())
                 .addMember("nativeQuery", "true")
                 .build();
-    }
-
-    private String getQuery() {
-        return String.format("\"%s\"", sqlQuery);
     }
 
     private String annotationType(AnnotationMirror annotation) {

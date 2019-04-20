@@ -138,8 +138,6 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
     private String getQuery(String queryPath) throws IOException {
         Filer filer = processingEnv.getFiler();
         FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, "", queryPath);
-        return IOUtils
-                .toString(queryFile.openInputStream(), "UTF-8")
-                .replaceAll(System.lineSeparator(), " "); // use this to create one line query string
+        return IOUtils.toString(queryFile.openInputStream(), "UTF-8");
     }
 }
