@@ -1,9 +1,9 @@
 package com.veinhorn.spring.sqlfile;
 
 import com.squareup.javapoet.TypeName;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypeRecognizerTest {
     @Test

@@ -1,7 +1,7 @@
 package com.veinhorn.spring.sqlfile;
 
 import com.squareup.javapoet.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.lang.model.element.Modifier;

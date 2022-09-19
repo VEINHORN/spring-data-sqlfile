@@ -1,12 +1,12 @@
 package com.veinhorn.spring.sqlfile;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.StringJoiner;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QueryBlockCreatorTest {
     @Test
