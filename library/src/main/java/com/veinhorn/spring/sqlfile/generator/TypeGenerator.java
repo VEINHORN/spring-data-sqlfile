@@ -10,12 +10,15 @@ import org.springframework.stereotype.Repository;
 import javax.lang.model.element.Modifier;
 import java.util.List;
 
+/**
+ * Generates result Repository type
+ */
 public class TypeGenerator implements Generator<TypeSpec> {
     private String repositoryName;
     private String entityType; // type of entity in JpaRepository
-    private String keyType;
+    private String keyType;    // type of key in JpaRepository
 
-    private List<MethodSpec> methods;
+    private List<MethodSpec> methods; // methods inside JpaRepository
 
     public TypeGenerator(String repositoryName, String entityType, String keyType, List<MethodSpec> methods) {
         this.repositoryName = repositoryName;

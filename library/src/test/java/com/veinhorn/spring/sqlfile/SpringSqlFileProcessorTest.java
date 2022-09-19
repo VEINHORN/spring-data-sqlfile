@@ -17,8 +17,13 @@ public class SpringSqlFileProcessorTest {
     public void testThatAnnotationProcessorSuccessfullyGeneratedRepository() {
         SpringSqlFileProcessor processor = new SpringSqlFileProcessor() {
             @Override
-            protected String getQuery(String queryPath) throws IOException {
-                return IOUtils.toString(SpringSqlFileProcessorTest.class.getResource("/find_top_users.sql"), StandardCharsets.UTF_8);
+            protected QueryRetriever getQueryRetriever() {
+                return new QueryRetriever(processingEnv) {
+                    @Override
+                    public String retrieve(String queryPath) throws IOException {
+                        return IOUtils.toString(SpringSqlFileProcessorTest.class.getResource("/find_top_users.sql"), StandardCharsets.UTF_8);
+                    }
+                };
             }
         };
 
