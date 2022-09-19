@@ -90,8 +90,8 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                                         methodAnnotations
                                 ).generate();
                             } catch (IOException e) {
-                                System.out.println(e.getStackTrace().toString());
-                                return null;
+                                e.printStackTrace();
+                                throw new RuntimeException(e.getMessage(), e);
                             }
                         })
                         .collect(Collectors.toList());
@@ -134,7 +134,13 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
         return processingEnv.getOptions().getOrDefault("classPostfix", "Impl");
     }
 
-    private String getQuery(String queryPath) throws IOException {
+    /**
+     * It's made protected for test purposes only, to be able to override it in tests
+     * @param queryPath
+     * @return
+     * @throws IOException
+     */
+    protected String getQuery(String queryPath) throws IOException {
         Filer filer = processingEnv.getFiler();
         String relativePackage = "";
         FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, relativePackage, queryPath);
