@@ -55,6 +55,7 @@
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <compilerArgs>
                         <arg>-AclassPostfix=Impl</arg>
+                        <arg>-parameters</arg>
                     </compilerArgs>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
