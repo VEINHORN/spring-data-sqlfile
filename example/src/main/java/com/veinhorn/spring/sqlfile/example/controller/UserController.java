@@ -3,19 +3,25 @@ package com.veinhorn.spring.sqlfile.example.controller;
 import com.veinhorn.spring.sqlfile.example.domain.User;
 import com.veinhorn.spring.sqlfile.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/")
+@RequestMapping("/users")
+@RestController
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserService service;
 
     @GetMapping
-    List<User> findAll() {
-        return userService.findAll(10);
+    public List<User> getAll(@RequestParam String username) {
+        if (username != null) return service.getByUsername(username);
+
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Integer id) {
+        return service.getById(id);
     }
 }

@@ -1,33 +1,32 @@
 package com.veinhorn.spring.sqlfile.example.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue
-    private int id;
+    @Column(name = "id")
+    private Integer userId;
+
     private String username;
 
     public User() {
 
     }
 
-    public User(int id, String username) {
-        this.id = id;
+    public User(Integer userId, String username) {
+        this.userId = userId;
         this.username = username;
     }
 
-    public int getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
