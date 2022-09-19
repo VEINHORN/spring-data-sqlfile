@@ -19,6 +19,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -121,9 +122,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(SqlFromResource.class.getCanonicalName());
-        return annotations;
+        return Collections.singleton(SqlFromResource.class.getCanonicalName());
     }
 
     @Override
@@ -137,7 +136,9 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
     private String getQuery(String queryPath) throws IOException {
         Filer filer = processingEnv.getFiler();
-        FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, "", queryPath);
-        return IOUtils.toString(queryFile.openInputStream(), "UTF-8");
+        String relativePackage = "";
+        FileObject queryFile = filer.getResource(StandardLocation.CLASS_OUTPUT, relativePackage, queryPath);
+
+        return IOUtils.toString(queryFile.openInputStream(), StandardCharsets.UTF_8);
     }
 }
