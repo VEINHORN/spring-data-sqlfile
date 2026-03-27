@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
     - uses: actions/checkout@v4
@@ -22,3 +24,13 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B clean verify
+
+    - name: Add JaCoCo report to PR
+      if: github.event_name == 'pull_request'
+      uses: madrapps/jacoco-report@v1.6.1
+      with:
+        paths: |
+          ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
+        token: ${{ secrets.GITHUB_TOKEN }}
+        min-coverage-overall: 20
+        min-coverage-changed-files: 20
