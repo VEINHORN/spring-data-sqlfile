@@ -2,11 +2,24 @@
 
 [![Build Status](https://travis-ci.org/VEINHORN/spring-data-sqlfile.svg?branch=master)](https://travis-ci.org/VEINHORN/spring-data-sqlfile) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
 
-When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load them from resources folder. It makes your code clean and you can work with well-formed *SQL* queries in your IDE.
+**spring-data-sqlfile** is a Java library that allows you to move large SQL queries from your Spring Data JPA `@Query` annotations into separate `.sql` files in your resources folder. This keeps your Java code clean and allows you to use SQL syntax highlighting and formatting in your IDE.
 
-## Install
+## Why use spring-data-sqlfile?
 
-### Add JitPack repository
+*   **Clean Code**: No more multiline strings or messy SQL inside Java annotations.
+*   **IDE Support**: Full SQL syntax highlighting, auto-completion, and formatting for your queries.
+*   **Maintainability**: Manage complex queries as separate files.
+*   **Automatic Generation**: Uses annotation processing to generate the final repository at compile-time.
+
+---
+
+## Installation
+
+This library is available via [JitPack](https://jitpack.io/#VEINHORN/spring-data-sqlfile).
+
+### 1. Add JitPack repository
+
+Add this to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -17,67 +30,103 @@ When your *SQL* queries become huge, `spring-data-sqlfile` helps you to load the
 </repositories>
 ```
 
-### Add dependency
+### 2. Add dependency
 
 ```xml
 <dependency>
     <groupId>com.github.VEINHORN.spring-data-sqlfile</groupId>
     <artifactId>sqlfile-processor</artifactId>
-    <version>16e42f6ffd</version>
+    <version>0.0.1</version>
 </dependency>
 ```
 
-## Usage
+---
 
-Just mark methods with `SqlFromResource` annotation and provide valid path to the SQL query.
+## How it Works
+
+The library uses an **Annotation Processor** to scan your interfaces marked with `@Repository`. For every method annotated with `@SqlFromResource`, it reads the specified SQL file from your resources and generates a new interface (defaulting to the original name + `Impl` postfix) containing the `@Query` annotation with the injected SQL.
+
+---
+
+## Quick Start
+
+### 1. Define your Repository
+
+Create an interface and annotate its methods with `@SqlFromResource`. Provide the path to your SQL file relative to the `resources` folder.
 
 ```java
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @SqlFromResource(path = "select_top_users.sql")
+    @SqlFromResource(path = "sql/find_all_users.sql")
     List<User> findAll();
 
-    @SqlFromResource(path = "select_user_by_id.sql")
-    User findById(int userId);
-
-    @SqlFromResource(path = "select_user_by_name.sql")
-    User findByUsername(String username);
+    @SqlFromResource(path = "sql/find_by_id.sql")
+    User findByUserId(Integer userId);
 }
 ```
 
-Recompile project with `mvn clean compile` and you'll get generated repository classes with SQL queries which are injected from resources folder. See [example](example) for more details.
+### 2. Create SQL files
 
+Place your SQL files in `src/main/resources/sql/`.
+
+**src/main/resources/sql/find_all_users.sql**:
+```sql
+SELECT * FROM users;
+```
+
+**src/main/resources/sql/find_by_id.sql**:
+```sql
+SELECT * FROM users WHERE id = :userId;
+```
+
+### 3. Compile your project
+
+Run `mvn clean compile`. The annotation processor will generate `UserRepositoryImpl` in the `target/generated-sources` directory.
+
+### 4. Use the generated Repository
+
+In your service, inject the generated `UserRepositoryImpl` interface:
 
 ```java
-@Repository
-public interface UserRepositoryImpl extends JpaRepository<User, Integer> {
-  @Query(
-      value = "SELECT *     FROM users     WHERE id = 2;",
-      nativeQuery = true
-  )
-  List<User> findAll();
+@Service
+public class UserService {
+    @Autowired
+    private UserRepositoryImpl repository; // Note the 'Impl' postfix
 
-  @Query(
-      value = "SELECT *     FROM users     WHERE id = :userId",
-      nativeQuery = true
-  )
-  User findById(int userId);
-
-  @Query(
-      value = "SELECT *     FROM users     WHERE username = :username",
-      nativeQuery = true
-  )
-  User findByUsername(String username);
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
 }
 ```
+
+---
 
 ## Configuration
 
-You can specify class postfix in `maven-compile-plugin` configuration (which is `Impl` by default):
+### Customizing the Class Postfix
+
+By default, the processor appends `Impl` to the generated interface name. You can customize this in your `maven-compiler-plugin` configuration:
 
 ```xml
-<compilerArgs>
-	<arg>-AclassPostfix=Impl</arg>
-</compilerArgs>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.8.0</version>
+    <configuration>
+        <compilerArgs>
+            <arg>-AclassPostfix=Generated</arg>
+        </compilerArgs>
+    </configuration>
+</plugin>
 ```
+*Now the generated interface will be named `UserRepositoryGenerated`.*
 
+---
+
+## Example
+
+For a complete working setup, check out the [example module](example).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
