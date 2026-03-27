@@ -1,6 +1,6 @@
 # spring-data-sqlfile
 
-[![Build Status](https://travis-ci.org/VEINHORN/spring-data-sqlfile.svg?branch=master)](https://travis-ci.org/VEINHORN/spring-data-sqlfile) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
+[![Java CI with Maven](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml/badge.svg)](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
 
 **spring-data-sqlfile** is a Java library that allows you to move large SQL queries from your Spring Data JPA `@Query` annotations into separate `.sql` files in your resources folder. This keeps your Java code clean and allows you to use SQL syntax highlighting and formatting in your IDE.
 
