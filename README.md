@@ -1,6 +1,6 @@
 # spring-data-sqlfile
 
-[![Java CI with Maven](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml/badge.svg)](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
+[![Java CI with Maven](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml/badge.svg)](https://github.com/VEINHORN/spring-data-sqlfile/actions/workflows/maven.yml) [![Maven Central](https://img.shields.io/maven-central/v/io.github.veinhorn/sqlfile-processor)](https://central.sonatype.com/artifact/io.github.veinhorn/sqlfile-processor) [![](https://jitpack.io/v/VEINHORN/spring-data-sqlfile.svg)](https://jitpack.io/#VEINHORN/spring-data-sqlfile)
 
 **spring-data-sqlfile** is a Java library that allows you to move large SQL queries from your Spring Data JPA `@Query` annotations into separate `.sql` files in your resources folder. This keeps your Java code clean and allows you to use SQL syntax highlighting and formatting in your IDE.
 
@@ -15,9 +15,23 @@
 
 ## Installation
 
-This library is available via [JitPack](https://jitpack.io/#VEINHORN/spring-data-sqlfile).
+### 1. Maven Central (Recommended)
 
-### 1. Add JitPack repository
+Add the following dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>io.github.veinhorn</groupId>
+    <artifactId>sqlfile-processor</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+### 2. JitPack
+
+This library is also available via [JitPack](https://jitpack.io/#VEINHORN/spring-data-sqlfile).
+
+#### 1. Add JitPack repository
 
 Add this to your `pom.xml`:
 
@@ -30,7 +44,7 @@ Add this to your `pom.xml`:
 </repositories>
 ```
 
-### 2. Add dependency
+#### 2. Add dependency
 
 ```xml
 <dependency>

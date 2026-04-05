@@ -4,13 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spring-data-sqlfile</artifactId>
-        <groupId>com.veinhorn.spring.sqlfile</groupId>
+        <groupId>io.github.veinhorn</groupId>
         <version>0.1.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>example</artifactId>
+
+    <name>spring-data-sqlite-example</name>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -30,7 +35,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.veinhorn.spring.sqlfile</groupId>
+            <groupId>io.github.veinhorn</groupId>
             <artifactId>sqlfile-processor</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -38,6 +43,22 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <configuration>
+                    <skipPublishing>true</skipPublishing>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

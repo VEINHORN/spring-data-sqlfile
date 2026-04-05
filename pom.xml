@@ -4,10 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.veinhorn.spring.sqlfile</groupId>
+    <groupId>io.github.veinhorn</groupId>
     <artifactId>spring-data-sqlfile</artifactId>
     <version>0.1.0</version>
     <packaging>pom</packaging>
+
+    <name>spring-data-sqlfile</name>
+    <description>Clean up your Spring Data JPA repositories by moving large SQL queries into separate .sql resource files with full IDE syntax highlighting.</description>
+    <url>https://github.com/VEINHORN/spring-data-sqlfile</url>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>VEINHORN</id>
+            <name>Boris Korogvich</name>
+            <email>b.korogvich@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/VEINHORN/spring-data-sqlfile.git</connection>
+        <developerConnection>scm:git:ssh://github.com:VEINHORN/spring-data-sqlfile.git</developerConnection>
+        <url>https://github.com/VEINHORN/spring-data-sqlfile</url>
+    </scm>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -42,6 +67,59 @@
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.10.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
