@@ -48,6 +48,7 @@
     <modules>
         <module>library</module>
         <module>example</module>
+        <module>experimental-example</module>
     </modules>
 
     <build>
