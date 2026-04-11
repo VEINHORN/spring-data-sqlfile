@@ -3,6 +3,8 @@ package com.veinhorn.spring.sqlfile.example.service;
 import com.veinhorn.spring.sqlfile.example.domain.User;
 import com.veinhorn.spring.sqlfile.example.repository.UserRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,6 +18,11 @@ public class UserServiceImpl implements UserService {
 
     public List<User> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Page<User> getAllPaged(Pageable pageable) {
+        return repository.findAllPaged(pageable);
     }
 
     @Override
