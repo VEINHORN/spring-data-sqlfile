@@ -65,6 +65,7 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
 
                             Annotation annotation = ((Element) method).getAnnotation(SqlFromResource.class);
                             String queryPath = ((SqlFromResource) annotation).path();
+                            String countQueryPath = ((SqlFromResource) annotation).countQueryPath();
 
                             System.out.println("method = " + method.getSimpleName().toString());
                             System.out.println("sql file path = " + queryPath);
@@ -81,9 +82,11 @@ public class SpringSqlFileProcessor extends AbstractProcessor {
                             paramTypes.forEach(System.out::println);
 
                             try {
+                                String countQuery = countQueryPath.isEmpty() ? null : getQuery(countQueryPath);
                                 return new MethodGenerator(
                                         ((Element) method).getSimpleName().toString(),
                                         getQuery(queryPath),
+                                        countQuery,
                                         ((Element) method).asType().toString(),
                                         paramTypes,
                                         paramNames,

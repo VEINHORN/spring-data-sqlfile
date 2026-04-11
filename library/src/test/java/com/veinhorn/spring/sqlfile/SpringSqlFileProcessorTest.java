@@ -18,7 +18,7 @@ public class SpringSqlFileProcessorTest {
         SpringSqlFileProcessor processor = new SpringSqlFileProcessor() {
             @Override
             protected String getQuery(String queryPath) throws IOException {
-                return IOUtils.toString(SpringSqlFileProcessorTest.class.getResource("/find_top_users.sql"), StandardCharsets.UTF_8);
+                return IOUtils.toString(SpringSqlFileProcessorTest.class.getResource("/" + queryPath), StandardCharsets.UTF_8);
             }
         };
 
@@ -35,5 +35,30 @@ public class SpringSqlFileProcessorTest {
                 .assertThat(compilation)
                 .generatedSourceFile("UserRepositoryImpl")
                 .hasSourceEquivalentTo(JavaFileObjects.forResource("UserRepositoryImpl.java"));
+    }
+
+    @Test
+    @DisplayName("Tests that annotation processor generated proper repository with countQuery")
+    public void testThatAnnotationProcessorSuccessfullyGeneratedRepositoryWithCountQuery() {
+        SpringSqlFileProcessor processor = new SpringSqlFileProcessor() {
+            @Override
+            protected String getQuery(String queryPath) throws IOException {
+                return IOUtils.toString(SpringSqlFileProcessorTest.class.getResource("/" + queryPath), StandardCharsets.UTF_8);
+            }
+        };
+
+        Compilation compilation = Compiler
+                .javac()
+                .withOptions("-AclassPostfix=Impl")
+                .withProcessors(processor)
+                .compile(JavaFileObjects.forResource("UserRepositoryWithCount.java"));
+
+        CompilationSubject.assertThat(compilation).succeeded();
+        CompilationSubject.assertThat(compilation).generatedSourceFile("UserRepositoryWithCountImpl");
+
+        CompilationSubject
+                .assertThat(compilation)
+                .generatedSourceFile("UserRepositoryWithCountImpl")
+                .hasSourceEquivalentTo(JavaFileObjects.forResource("UserRepositoryWithCountImpl.java"));
     }
 }

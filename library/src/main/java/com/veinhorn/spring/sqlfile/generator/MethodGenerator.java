@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 public class MethodGenerator implements Generator<MethodSpec> {
     private String methodName;
     private String sqlQuery;
+    private String countQuery;
     private String methodType;
 
     private List<String> paramTypes;
@@ -27,11 +28,12 @@ public class MethodGenerator implements Generator<MethodSpec> {
     // method annotations from incoming Repository method
     private List<? extends AnnotationMirror> methodAnnotations;
 
-    public MethodGenerator(String methodName, String sqlQuery, String methodType,
+    public MethodGenerator(String methodName, String sqlQuery, String countQuery, String methodType,
                            List<String> paramTypes, List<String> paramNames,
                            List<? extends AnnotationMirror> methodAnnotations) {
         this.methodName = methodName;
         this.sqlQuery = sqlQuery;
+        this.countQuery = countQuery;
         this.methodType = methodType;
         this.paramTypes = paramTypes;
         this.paramNames = paramNames;
@@ -92,9 +94,15 @@ public class MethodGenerator implements Generator<MethodSpec> {
     }
 
     private AnnotationSpec createQueryAnnotation() {
-        return AnnotationSpec
+        AnnotationSpec.Builder builder = AnnotationSpec
                 .builder(Query.class)
-                .addMember("value", new QueryBlockCreator(sqlQuery).create())
+                .addMember("value", new QueryBlockCreator(sqlQuery).create());
+
+        if (countQuery != null && !countQuery.isEmpty()) {
+            builder.addMember("countQuery", new QueryBlockCreator(countQuery).create());
+        }
+
+        return builder
                 .addMember("nativeQuery", "true")
                 .build();
     }

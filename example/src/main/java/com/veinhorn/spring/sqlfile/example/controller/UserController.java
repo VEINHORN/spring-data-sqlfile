@@ -3,6 +3,8 @@ package com.veinhorn.spring.sqlfile.example.controller;
 import com.veinhorn.spring.sqlfile.example.domain.User;
 import com.veinhorn.spring.sqlfile.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +16,15 @@ public class UserController {
     private UserService service;
 
     @GetMapping
-    public List<User> getAll(@RequestParam String username) {
+    public List<User> getAll(@RequestParam(required = false) String username) {
         if (username != null) return service.getByUsername(username);
 
         return service.getAll();
+    }
+
+    @GetMapping("/paged")
+    public Page<User> getAllPaged(Pageable pageable) {
+        return service.getAllPaged(pageable);
     }
 
     @GetMapping("/{id}")
