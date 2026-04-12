@@ -6,7 +6,7 @@
 
     <groupId>io.github.veinhorn</groupId>
     <artifactId>spring-data-sqlfile</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
 
     <name>spring-data-sqlfile</name>

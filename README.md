@@ -23,7 +23,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.veinhorn</groupId>
     <artifactId>sqlfile-processor</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -50,7 +50,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.VEINHORN.spring-data-sqlfile</groupId>
     <artifactId>sqlfile-processor</artifactId>
-    <version>v0.1.0</version>
+    <version>v0.2.0</version>
 </dependency>
 ```
 
